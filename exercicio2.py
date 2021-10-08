@@ -4,6 +4,7 @@ from typing import ClassVar
 import numpy
 from numpy.core.arrayprint import IntegerFormat
 from numpy.core.defchararray import array
+from scipy.sparse import data
 
 #Cross Validation 
 from sklearn.model_selection import cross_val_score, StratifiedKFold
@@ -13,6 +14,7 @@ from sklearn.model_selection import cross_val_score, StratifiedKFold
 from  sklearn import neighbors
 from sklearn import tree
 import sklearn
+from sklearn.naive_bayes import GaussianNB
 
 
 # importing the required module
@@ -95,7 +97,7 @@ fw = open("filteredData", "a")
 for line in f:
     if(line.find("?")==-1 & line.find("@")==-1):
         #Depois fazer write de sample organizado
-        fw.write(line)
+        #fw.write(line)
         splitLine = line.split(",")
         type = 1 if (splitLine[9][:-1]=="benign") else 0
         dataLabels.append(type)
@@ -152,4 +154,9 @@ clf.fit(trainingData, dataLabels)
 knn_cv = neighbors.KNeighborsClassifier(n_neighbors=3)
 cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=12)
 cv_scores = cross_val_score(knn_cv, trainingData, dataLabels, cv=cv)
-print(cv_scores)
+print("Lista de Cv Scores :kNN",cv_scores)
+print("Medium Cv: kNN", sum(cv_scores/10))
+
+gnb = GaussianNB()
+gaussianPred = cross_val_score(gnb, trainingData, dataLabels, cv=cv)
+print("Gaussian score", sum(gaussianPred)/10)
