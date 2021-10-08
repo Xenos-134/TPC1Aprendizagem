@@ -5,13 +5,19 @@ import numpy
 from numpy.core.arrayprint import IntegerFormat
 from numpy.core.defchararray import array
 
+#Cross Validation 
+from sklearn.model_selection import cross_val_score, StratifiedKFold
+
+
 #Training algorithms
 from  sklearn import neighbors
 from sklearn import tree
+import sklearn
 
 
 # importing the required module
 import matplotlib.pyplot as plt
+from sklearn.utils import shuffle
 
 
 clumpThickness = {"B":[0,0,0,0,0,0,0,0,0,0], "M": [0,0,0,0,0,0,0,0,0,0]}
@@ -94,15 +100,15 @@ for line in f:
         type = 1 if (splitLine[9][:-1]=="benign") else 0
         dataLabels.append(type)
         trainingData.append([
-            splitLine[0],
-            splitLine[1],
-            splitLine[2],
-            splitLine[3],
-            splitLine[4],
-            splitLine[5],
-            splitLine[6],
-            splitLine[7],
-            splitLine[8],
+            float(splitLine[0]),
+            float(splitLine[1]),
+            float(splitLine[2]),
+            float(splitLine[3]),
+            float(splitLine[4]),
+            float(splitLine[5]),
+            float(splitLine[6]),
+            float(splitLine[7]),
+            float(splitLine[8]),
         ])
         calculateClumptThickness(line)
 
@@ -130,10 +136,20 @@ ax.legend()
 
 fig.tight_layout()
 
+    #Prints !!! depois vou tirar
 #plt.show()
-print(dataLabels)
+#print(dataLabels)
 
 clf = neighbors.KNeighborsClassifier(n_neighbors=3)
 clf.fit(trainingData, dataLabels)
-print(clf.predict([[5,1,1,1,2,1,3,1,1]]))
-print(clf.predict_proba([[5,1,1,5,2,1,4,1,10]]))
+
+#       >>kNN individual
+#print(clf.predict([[5,1,1,1,2,1,3,1,1]]))
+#print(clf.predict_proba([[5,1,1,5,2,1,4,1,10]]))
+
+
+##Cross Fold Validation with 10 groups
+knn_cv = neighbors.KNeighborsClassifier(n_neighbors=3)
+cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=12)
+cv_scores = cross_val_score(knn_cv, trainingData, dataLabels, cv=cv)
+print(cv_scores)
