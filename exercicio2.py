@@ -119,6 +119,7 @@ print("Our clump Thickness Bennign", clumpThickness)
 
 
 
+
 width = 0.35  # the width of the bars
 x = numpy.arange(10)
 
@@ -139,10 +140,10 @@ ax.legend()
 fig.tight_layout()
 
     #Prints !!! depois vou tirar
-#plt.show()
+plt.show()
 #print(dataLabels)
 
-clf = neighbors.KNeighborsClassifier(n_neighbors=3)
+clf = neighbors.KNeighborsClassifier(n_neighbors=3, metric="euclidean")
 clf.fit(trainingData, dataLabels)
 
 #       >>kNN individual
@@ -152,7 +153,7 @@ clf.fit(trainingData, dataLabels)
 
 ##Cross Fold Validation with 10 groups
 knn_cv = neighbors.KNeighborsClassifier(n_neighbors=3)
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=12)
+cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=107)
 cv_scores = cross_val_score(knn_cv, trainingData, dataLabels, cv=cv)
 print("Lista de Cv Scores :kNN",cv_scores)
 print("Medium Cv: kNN", sum(cv_scores/10))
