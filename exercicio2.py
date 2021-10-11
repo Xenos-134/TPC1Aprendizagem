@@ -10,6 +10,7 @@ from scipy.sparse import data
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 
 
+
 #Training algorithms
 from  sklearn import neighbors
 from sklearn import tree
@@ -19,6 +20,7 @@ from sklearn.naive_bayes import GaussianNB
 
 # importing the required module
 import matplotlib.pyplot as plt
+plt.style.use('seaborn-deep')
 from sklearn.utils import shuffle
 
 
@@ -115,33 +117,56 @@ for line in f:
         calculateClumptThickness(line)
 
 
-print("Our clump Thickness Bennign", clumpThickness)
+#print("Our clump Thickness Bennign", clumpThickness)
 
+x = numpy.linspace(0, 2 * numpy.pi, 400)
+y = numpy.sin(x ** 2)
 
+xz = numpy.arange(10)
 
-
+fig, axs = plt.subplots(3, 3)
 width = 0.35  # the width of the bars
-x = numpy.arange(10)
 
-fig, ax = plt.subplots()
-rects1 = ax.bar(x - width/2, clumpThickness["B"], width, label='Benign')
-rects2 = ax.bar(x + width/2, clumpThickness["M"], width, label='Malign')
+#rects1 = ax.bar(xz - width/2, clumpThickness["B"], width, label='Benign')
+#rects2 = ax.bar(xz + width/2, clumpThickness["M"], width, label='Malign')
 
+axs[0,0].bar(xz - width/2, clumpThickness["B"], width, label='Benign')
+axs[0,0].bar(xz + width/2, clumpThickness["M"], width, label='Malign')
 
-
-
-# Add some text for labels, title and custom x-axis tick labels, etc.
-ax.set_ylabel('Number of cases')
-ax.set_title('Severity')
-ax.set_xticks(x)
-ax.set_xticklabels([1,2,3,4,5,6,7,8,9,10])
-ax.legend()
+axs[0,0].set_ylabel('Number of cases')
+axs[0,0].set_title('Severity')
+axs[0,0].set_xticks(xz)
+axs[0,0].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[0,0].legend()
 
 fig.tight_layout()
 
-    #Prints !!! depois vou tirar
+axs[0, 1].plot(x, y, 'tab:orange')
+axs[0, 1].set_title('Axis [0, 1]')
+axs[1, 0].plot(x, -y, 'tab:green')
+axs[1, 0].set_title('Axis [1, 0]')
+axs[1, 1].plot(x, -y, 'tab:red')
+axs[1, 1].set_title('Axis [1, 1]')
+axs[0, 2].plot(x, y)
+axs[0, 2].set_title('Axis [0, 0]')
+axs[2, 0].plot(x, y)
+axs[2, 0].set_title('Axis [0, 0]')
+axs[2, 2].plot(x, y)
+axs[2, 2].set_title('Axis [0, 0]')
+axs[1, 2].plot(x, y)
+axs[1, 2].set_title('Axis [0, 0]')
+axs[2, 1].plot(x, y)
+axs[2, 1].set_title('Axis [0, 0]')
+
+for ax in axs.flat:
+    ax.set(xlabel='Number of Cases', ylabel='Class')
+
+# Hide x labels and tick labels for top plots and y ticks for right plots.
+for ax in axs.flat:
+    ax.label_outer()
+
+
 plt.show()
-#print(dataLabels)
 
 clf = neighbors.KNeighborsClassifier(n_neighbors=3, metric="euclidean")
 clf.fit(trainingData, dataLabels)
