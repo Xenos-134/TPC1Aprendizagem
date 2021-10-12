@@ -46,50 +46,57 @@ def calculateClumptThickness(line):
 
 def calculateCellSizeUniformity(line):
     if(line.split(",")[9][:-1]=="benign"):
-        clumpThickness["B"][int(line.split(",")[1])-1]+=1
+        cellSizeUniformity["B"][int(line.split(",")[1])-1]+=1
         return
-    clumpThickness["M"][int(line.split(",")[1])-1]+=1
+    cellSizeUniformity["M"][int(line.split(",")[1])-1]+=1
 
 def calculateCellShapeUniformity(line):
     if(line.split(",")[9][:-1]=="benign"):
-        clumpThickness["B"][int(line.split(",")[2])-1]+=1
+        cellShapeUniformity["B"][int(line.split(",")[2])-1]+=1
         return
-    clumpThickness["M"][int(line.split(",")[2])-1]+=1
+    cellShapeUniformity["M"][int(line.split(",")[2])-1]+=1
 
 
 def calculateMarginalAdhesion(line):
     if(line.split(",")[9][:-1]=="benign"):
-        clumpThickness["B"][int(line.split(",")[3])-1]+=1
+        marginalAdhesion["B"][int(line.split(",")[3])-1]+=1
         return
-    clumpThickness["M"][int(line.split(",")[3])-1]+=1
+    marginalAdhesion["M"][int(line.split(",")[3])-1]+=1
 
 
 def calculateSingleEpiCellSize(line):
     if(line.split(",")[9][:-1]=="benign"):
-        clumpThickness["B"][int(line.split(",")[4])-1]+=1
+        singleEpiCellSize["B"][int(line.split(",")[4])-1]+=1
         return
-    clumpThickness["M"][int(line.split(",")[4])-1]+=1
+    singleEpiCellSize["M"][int(line.split(",")[4])-1]+=1
 
 
 def calculateBareNuclei(line):
     if(line.split(",")[9][:-1]=="benign"):
-        clumpThickness["B"][int(line.split(",")[5])-1]+=1
+        bareNuclei["B"][int(line.split(",")[5])-1]+=1
         return
-    clumpThickness["M"][int(line.split(",")[5])-1]+=1
+    bareNuclei["M"][int(line.split(",")[5])-1]+=1
 
 
 def calculateBlandChromatin(line):
     if(line.split(",")[9][:-1]=="benign"):
-        clumpThickness["B"][int(line.split(",")[6])-1]+=1
+        blandChromatin["B"][int(line.split(",")[6])-1]+=1
         return
-    clumpThickness["M"][int(line.split(",")[6])-1]+=1
+    blandChromatin["M"][int(line.split(",")[6])-1]+=1
 
+
+def calculateNormalNucleoi(line):
+    if(line.split(",")[9][:-1]=="benign"):
+        normalNucleoi["B"][int(line.split(",")[7])-1]+=1
+        return
+    normalNucleoi["M"][int(line.split(",")[7])-1]+=1
 
 def calculateMitoses(line):
     if(line.split(",")[9][:-1]=="benign"):
-        clumpThickness["B"][int(line.split(",")[7])-1]+=1
+        mitoses["B"][int(line.split(",")[8])-1]+=1
         return
-    clumpThickness["M"][int(line.split(",")[7])-1]+=1
+    mitoses["M"][int(line.split(",")[8])-1]+=1
+
 
 
 #Open input file and filters lines by its content
@@ -114,10 +121,19 @@ for line in f:
             float(splitLine[7]),
             float(splitLine[8]),
         ])
+
         calculateClumptThickness(line)
+        calculateCellSizeUniformity(line)
+        calculateCellShapeUniformity(line)
+        calculateMarginalAdhesion(line)
+        calculateSingleEpiCellSize(line)
+        calculateBareNuclei(line)
+        calculateBlandChromatin(line)
+        calculateNormalNucleoi(line)
+        calculateMitoses(line)
+        
 
 
-#print("Our clump Thickness Bennign", clumpThickness)
 
 x = numpy.linspace(0, 2 * numpy.pi, 400)
 y = numpy.sin(x ** 2)
@@ -127,45 +143,112 @@ xz = numpy.arange(10)
 fig, axs = plt.subplots(3, 3)
 width = 0.35  # the width of the bars
 
-#rects1 = ax.bar(xz - width/2, clumpThickness["B"], width, label='Benign')
-#rects2 = ax.bar(xz + width/2, clumpThickness["M"], width, label='Malign')
 
+#################################################
+#          Clump Thickness                     #
+################################################
 axs[0,0].bar(xz - width/2, clumpThickness["B"], width, label='Benign')
 axs[0,0].bar(xz + width/2, clumpThickness["M"], width, label='Malign')
-
-axs[0,0].set_ylabel('Number of cases')
-axs[0,0].set_title('Severity')
 axs[0,0].set_xticks(xz)
 axs[0,0].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
 axs[0,0].legend()
+axs[0, 0].set_title('Clump Thickness')
+
+
+
+#################################################
+#          Cell Size Uniformity                #
+################################################
+axs[0,1].bar(xz - width/2, cellSizeUniformity["B"], width, label='Benign')
+axs[0,1].bar(xz + width/2, cellSizeUniformity["M"], width, label='Malign')
+axs[0,1].set_xticks(xz)
+axs[0,1].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[0,1].legend()
+axs[0,1].set_title('Cell Size Uniformity')
+
+
+#################################################
+#          Cell Shape  Uniformity              #
+################################################
+axs[0,2].bar(xz - width/2, cellShapeUniformity["B"], width, label='Benign')
+axs[0,2].bar(xz + width/2, cellShapeUniformity["M"], width, label='Malign')
+axs[0,2].set_xticks(xz)
+axs[0,2].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[0,2].legend()
+axs[0,2].set_title('Cell Shape Uniformity')
+
+
+#################################################
+#          Cell Marginal Adhe sion             #
+################################################
+axs[1,0].bar(xz - width/2, marginalAdhesion["B"], width, label='Benign')
+axs[1,0].bar(xz + width/2, marginalAdhesion["M"], width, label='Malign')
+axs[1,0].set_xticks(xz)
+axs[1,0].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[1,0].legend()
+axs[1,0].set_title('Cell Marginal Adhesion')
+
+
+#################################################
+#          Cell Epicell size                   #
+################################################
+axs[1,1].bar(xz - width/2, singleEpiCellSize["B"], width, label='Benign')
+axs[1,1].bar(xz + width/2, singleEpiCellSize["M"], width, label='Malign')
+axs[1,1].set_xticks(xz)
+axs[1,1].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[1,1].legend()
+axs[1,1].set_title('Cell Single Epicell Size')
+
+
+#################################################
+#          Cell Bare Nuclei                    #
+################################################
+axs[1,2].bar(xz - width/2, bareNuclei["B"], width, label='Benign')
+axs[1,2].bar(xz + width/2,bareNuclei["M"], width, label='Malign')
+axs[1,2].set_xticks(xz)
+axs[1,2].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[1,2].legend()
+axs[1,2].set_title('Cell Bare Nuclei')
+
+
+#################################################
+#          Cell Bland Chromatin                 #
+################################################
+axs[2,0].bar(xz - width/2, blandChromatin["B"], width, label='Benign')
+axs[2,0].bar(xz + width/2,blandChromatin["M"], width, label='Malign')
+axs[2,0].set_xticks(xz)
+axs[2,0].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[2,0].legend()
+axs[2,0].set_title('Cell Bland Chromatin')
+
+
+#################################################
+#          Cell Normal Nucleoi                 #
+################################################
+axs[2,1].bar(xz - width/2, normalNucleoi["B"], width, label='Benign')
+axs[2,1].bar(xz + width/2, normalNucleoi["M"], width, label='Malign')
+axs[2,1].set_xticks(xz)
+axs[2,1].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[2,1].legend()
+axs[2,1].set_title('Normal Nucleoi')
+
+#################################################
+#          Cell Normal Nucleoi                 #
+
+################################################
+axs[2,2].bar(xz - width/2, mitoses["B"], width, label='Benign')
+axs[2,2].bar(xz + width/2, mitoses["M"], width, label='Malign')
+axs[2,2].set_xticks(xz)
+axs[2,2].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
+axs[2,2].legend()
+axs[2,2].set_title('Mitoses')
+
+for ax in axs.flat:
+    ax.set(xlabel='Severity', ylabel='Number of cases')
+
+
 
 fig.tight_layout()
-
-axs[0, 1].plot(x, y, 'tab:orange')
-axs[0, 1].set_title('Axis [0, 1]')
-axs[1, 0].plot(x, -y, 'tab:green')
-axs[1, 0].set_title('Axis [1, 0]')
-axs[1, 1].plot(x, -y, 'tab:red')
-axs[1, 1].set_title('Axis [1, 1]')
-axs[0, 2].plot(x, y)
-axs[0, 2].set_title('Axis [0, 0]')
-axs[2, 0].plot(x, y)
-axs[2, 0].set_title('Axis [0, 0]')
-axs[2, 2].plot(x, y)
-axs[2, 2].set_title('Axis [0, 0]')
-axs[1, 2].plot(x, y)
-axs[1, 2].set_title('Axis [0, 0]')
-axs[2, 1].plot(x, y)
-axs[2, 1].set_title('Axis [0, 0]')
-
-for ax in axs.flat:
-    ax.set(xlabel='Number of Cases', ylabel='Class')
-
-# Hide x labels and tick labels for top plots and y ticks for right plots.
-for ax in axs.flat:
-    ax.label_outer()
-
-
 plt.show()
 
 clf = neighbors.KNeighborsClassifier(n_neighbors=3, metric="euclidean")
