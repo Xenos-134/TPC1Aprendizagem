@@ -15,15 +15,20 @@ from sklearn.model_selection import cross_val_score, StratifiedKFold
 from  sklearn import neighbors
 from sklearn import tree
 import sklearn
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import MultinomialNB
 
 
-# importing the required module
+# importing modules for plots
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-deep')
-from sklearn.utils import shuffle
+#from sklearn.utils import shuffle
 
 
+
+#################################################
+#          Initialization of emty arrays for    #
+# each parameter                                #
+################################################
 clumpThickness = {"B":[0,0,0,0,0,0,0,0,0,0], "M": [0,0,0,0,0,0,0,0,0,0]}
 cellSizeUniformity = {"B":[0,0,0,0,0,0,0,0,0,0], "M": [0,0,0,0,0,0,0,0,0,0]}
 cellShapeUniformity = {"B":[0,0,0,0,0,0,0,0,0,0], "M": [0,0,0,0,0,0,0,0,0,0]}
@@ -34,9 +39,18 @@ blandChromatin = {"B":[0,0,0,0,0,0,0,0,0,0], "M": [0,0,0,0,0,0,0,0,0,0]}
 normalNucleoi = {"B":[0,0,0,0,0,0,0,0,0,0], "M": [0,0,0,0,0,0,0,0,0,0]}
 mitoses = {"B":[0,0,0,0,0,0,0,0,0,0], "M": [0,0,0,0,0,0,0,0,0,0]}
 
+
+#################################################
+#       trainingData -Array that recives all    #
+# filtered data from doc                        #
+################################################
 trainingData = []
 dataLabels = []
 
+
+#################################################
+#   Functions that append data to resp array    #
+################################################
 
 def calculateClumptThickness(line):
     if(line.split(",")[9][:-1]=="benign"):
@@ -105,11 +119,11 @@ f = open("breast.w.arff", "r")
 fw = open("filteredData", "a")
 for line in f:
     if(line.find("?")==-1 & line.find("@")==-1):
-        #Depois fazer write de sample organizado
         #fw.write(line)
         splitLine = line.split(",")
         type = 1 if (splitLine[9][:-1]=="benign") else 0
         dataLabels.append(type)
+        #appends to global arrray - used in kNN and Bayanesian prediction
         trainingData.append([
             float(splitLine[0]),
             float(splitLine[1]),
@@ -122,6 +136,7 @@ for line in f:
             float(splitLine[8]),
         ])
 
+        #appends data to parameter array - used in plot
         calculateClumptThickness(line)
         calculateCellSizeUniformity(line)
         calculateCellShapeUniformity(line)
@@ -134,7 +149,7 @@ for line in f:
         
 
 
-
+    #spacing used for plot column
 x = numpy.linspace(0, 2 * numpy.pi, 400)
 y = numpy.sin(x ** 2)
 
@@ -234,7 +249,6 @@ axs[2,1].set_title('Normal Nucleoi')
 
 #################################################
 #          Cell Normal Nucleoi                 #
-
 ################################################
 axs[2,2].bar(xz - width/2, mitoses["B"], width, label='Benign')
 axs[2,2].bar(xz + width/2, mitoses["M"], width, label='Malign')
@@ -243,15 +257,14 @@ axs[2,2].set_xticklabels([1,2,3,4,5,6,7,8,9,10])
 axs[2,2].legend()
 axs[2,2].set_title('Mitoses')
 
+
 for ax in axs.flat:
     ax.set(xlabel='Severity', ylabel='Number of cases')
-
-
 
 fig.tight_layout()
 plt.show()
 
-clf = neighbors.KNeighborsClassifier(n_neighbors=3, metric="euclidean")
+clf = neighbors.KNeighborsClassifier(n_neighbors=3)
 clf.fit(trainingData, dataLabels)
 
 #       >>kNN individual
@@ -259,13 +272,38 @@ clf.fit(trainingData, dataLabels)
 #print(clf.predict_proba([[5,1,1,5,2,1,4,1,10]]))
 
 
-##Cross Fold Validation with 10 groups
-knn_cv = neighbors.KNeighborsClassifier(n_neighbors=3)
+#Cross Fold Validation with 10 groups
+#################################################
+#                  QUESTION 6                   #
+################################################
+print("*************Question number 6*************")
+for i in [3, 5, 7]:
+    knn_cv = neighbors.KNeighborsClassifier(n_neighbors=i, metric="euclidean")
+    cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=107)
+    cv_scores = cross_val_score(knn_cv, trainingData, dataLabels, cv=cv)
+    print("Medium CV: kNN for n_neighbors = " + str(i) + ": " + str(sum(cv_scores/10)))
+
+print("Best number of neighbors is 5")
+
+#################################################
+#                  QUESTION 7                   #
+################################################
+print("*************Question number 7*************")
+
+knn_cv = neighbors.KNeighborsClassifier(n_neighbors=3, metric="euclidean")
 cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=107)
 cv_scores = cross_val_score(knn_cv, trainingData, dataLabels, cv=cv)
-print("Lista de Cv Scores :kNN",cv_scores)
-print("Medium Cv: kNN", sum(cv_scores/10))
-
-gnb = GaussianNB()
+print("Medium CV: kNN", sum(cv_scores/10))
+gnb = MultinomialNB()
 gaussianPred = cross_val_score(gnb, trainingData, dataLabels, cv=cv)
 print("Gaussian score", sum(gaussianPred)/10)
+
+print("-->We conclude that KNN is better for this particular dataset")
+
+#################################################
+#                  QUESTION 8                  #
+################################################
+print("*************Question number 8*************")
+
+print("-->Naive Bayes assumes that all predictors (or features) are independent, rarely happening in real life.")
+print("-->This algorithm faces the 'zero-frequency problem' where it assigns zero probability to a categorical variable whose category in the test data set wasn't available in the training dataset.")
